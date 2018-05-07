@@ -1,21 +1,38 @@
+% This small example illustrates how to use the remote API
+% synchronous mode. The synchronous mode needs to be
+% pre-enabled on the server side. You would do this by
+% starting the server (e.g. in a child script) with:
+%
+% simRemoteApi.start(19999,1300,false,true)
+%
+% But in this example we try to connect on port
+% 19997 where there should be a continuous remote API
+% server service already running and pre-enabled for
+% synchronous mode.
+%
+% IMPORTANT: for each successful call to simxStart, there
+% should be a corresponding call to simxFinish at the end!
 
-function simpleTest()
-    clear();
+function simpleSynchronousTest()
     disp('Program started');
-
-    vrep=remApi('remoteApi');
-    vrep.simxFinish(-1);
-    clientID=vrep.simxStart('127.0.0.1',19999,true,true,5000,5);
+    % vrep=remApi('remoteApi','extApi.h'); % using the header (requires a compiler)
+    vrep=remApi('remoteApi'); % using the prototype file (remoteApiProto.m)
+    vrep.simxFinish(-1); % just in case, close all opened connections
+    clientID=vrep.simxStart('127.0.0.1',19997,true,true,5000,5);
 
     if (clientID>-1)
         disp('Connected to remote API server');
 
+        % enable the synchronous mode on the client:
+        vrep.simxSynchronous(clientID,true);
 
-        while (1)
+        % start the simulation:
+        vrep.simxStartSimulation(clientID,vrep.simx_opmode_blocking);
+
+        % Now step a few times:
+        while(1)
             
-            tic;
-    
-            for i=0:3     
+             for i=0:3     
                 
                 main_trgt_pos=GetDisturbedMainTrgtPosition(vrep,clientID);
                 [xd_0, x_0]=GetDisturbedQuadPosition(vrep,clientID,4);
@@ -25,24 +42,22 @@ function simpleTest()
                 SetQuadTrgtPos(vrep, clientID, i, [trgt_alg_x(i+1) trgt_alg_y(i+1) x_0(i+1,3)]);                                
             end
             
-            elapsed_time=toc;
+            vrep.simxSynchronousTrigger(clientID);
         end
-        
 
-        % Before closing the connection to V-REP, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
-        vrep.simxGetPingTime(clientID);
+        % stop the simulation:
+        vrep.simxStopSimulation(clientID,vrep.simx_opmode_blocking);
 
         % Now close the connection to V-REP:    
         vrep.simxFinish(clientID);
     else
         disp('Failed connecting to remote API server');
     end
-    
-    %the destructor call 
-    vrep.delete(); 
+    vrep.delete(); % call the destructor!
     
     disp('Program ended');
 end
+
 
 function [dpos, pos]=GetDisturbedMainTrgtPosition(VrepAPI, ClientID)
     dpos=zeros(1,3);
@@ -160,8 +175,8 @@ function Position = GetQuadTrgtPos(VrepAPI, ClientID, QuadNumber)
     persistent QuadTrgtHandle;
     persistent Number;
 
-    StdQuadTrgtName='Quadricopter_target#';
-    %StdQuadTrgtName='Quadricopter_base#';
+    %StdQuadTrgtName='Quadricopter_target#';
+    StdQuadTrgtName='Quadricopter_base#';
     QuadNumber=num2str(QuadNumber);
     QuadTrgtName=strcat(StdQuadTrgtName, QuadNumber);
     
