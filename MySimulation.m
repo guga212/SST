@@ -10,10 +10,8 @@ function simpleTest()
     if (clientID>-1)
         disp('Connected to remote API server');
 
-        
-        figure(1);
-        H = uicontrol('Style', 'PushButton','String', 'Break', 'Callback', 'delete(gcbf)');   
-        while (ishandle(H))
+
+        while (1)
             
             tic;
             
@@ -33,12 +31,10 @@ function simpleTest()
             x_0f(4,:)=GetQuadTrgtPos(vrep, clientID, 3)';
             x_0(4,:)=x_0f(4,1:2);
             
-            [trgt_alg_x, trgt_alg_y]=OptimizeNextMove([double(main_trgt_pos(1)) double(main_trgt_pos(2))], [1.41;1.41;1.41;1.41 ].*0.9, [2;2;2;2].*0.9, x_0, 1.0, 1.2, 0.9);
+            [trgt_alg_x, trgt_alg_y]=OptimizeNextMove([double(main_trgt_pos(1)) double(main_trgt_pos(2))], [1.41;1.41;1.41;1.41 ].*0.9, [0 2 2.828 2; 2 0 2 2.828; 2.828 2 0 2; 2 2.828 2 0].*0.9, x_0, 1.0, 1.2, 0.6);
             
-            for i=0:3
-                
-                SetQuadTrgtPos(vrep, clientID, i, [trgt_alg_x(i+1) trgt_alg_y(i+1) x_0f(i+1,3)]);                
-                
+            for i=0:3                
+                SetQuadTrgtPos(vrep, clientID, i, [trgt_alg_x(i+1) trgt_alg_y(i+1) x_0f(i+1,3)]);                                
             end
             
             elapsed_time=toc;
@@ -53,18 +49,22 @@ function simpleTest()
     else
         disp('Failed connecting to remote API server');
     end
-    vrep.delete(); % call the destructor!
+    
+    %the destructor call 
+    vrep.delete(); 
     
     disp('Program ended');
 end
 
-
+%X zmienna celu
+%D zadana odleglosc do celu 
+%d zadana macierz odleglosc do sasiada
+%A minimalna odleglosc do celu
+%a minimalna odleglosc do sasiada
 function [x,y]=OptimizeNextMove(X,D,d,x_0,A,a,dx)
     tfun = @(x)TargetFunction(x,X,D,d);
     cfun=@(x)ConstraintFunction(x,X,A,a,x_0,dx);
-    options = optimoptions('fmincon', 'MaxFunctionEvaluations', 4000);
-    [res minval]=fmincon(tfun,x_0,[],[],[],[],[],[],cfun,options);
-    minval
+    [res minval]=fmincon(tfun,x_0,[],[],[],[],[],[],cfun);
     x=res(:,1);
     y=res(:,2);
 end
@@ -72,32 +72,20 @@ end
 %x zmienne pozycji 
 %X zmienna celu
 %D zadana odleglosc do celu 
-%d zadana odleglosc do sasiada
+%d zadana macierz odleglosc do sasiada
 function out=TargetFunction(x,X,D,d)
+
     out=0;
     
     for i=1:size(x,1)
         out=out+(D(i)^2-(X(1,1)-x(i,1))^2-(X(1,2)-x(i,2))^2)^2;
     end
     
-    for i=1:size(x,1)
-        
-        index_neighb_1=size(x,1);
-        index_neighb_2=i+1;
-            
-        if i==1
-            index_neighb_1=size(x,1);
+    for i=1:size(x,1)       
+        for j=1:size(x,1)            
+            weight=1.0;         
+            out=out+weight*(d(i,j)^2-(x(i,1)-x(j,1))^2-(x(i,2)-x(j,2))^2)^2;                    
         end
-        
-        if i==size(x,1)
-            index_neighb_2=1;
-        end
-        
-        weight=1.0;
-        
-        out=out+weight*(d(i)^2-(x(i,1)-x(index_neighb_1,1))^2-(x(i,2)-x(index_neighb_1,2))^2)^2;
-        out=out+weight*(d(i)^2-(x(i,1)-x(index_neighb_2,1))^2-(x(i,2)-x(index_neighb_2,2))^2)^2;
-        
     end
     
 end
@@ -106,7 +94,9 @@ end
 %x zmienne pozycji 
 %X zmienna celu
 %A minimalna odleglosc do celu
-%d minimalna odleglosc do sasiada
+%a minimalna odleglosc do sasiada
+%x_0 pozycja poczatkowa
+%dx maksymalne przesuniecie
 function [c,ceq]=ConstraintFunction(x,X,A,a,x_0,dx)
     
      cur_ind=0; 
@@ -119,14 +109,14 @@ function [c,ceq]=ConstraintFunction(x,X,A,a,x_0,dx)
     end
     
     start_compare=2;    
-   for i=1:size(x,1)        
+    for i=1:size(x,1)        
   
-       for j=start_compare:size(x,1)
-         cur_ind=cur_ind+1; 
-         c(cur_ind)=a^2-(x(j,1)-x(i,1))^2-(x(j,2)-x(i,2))^2;
-       end
+        for j=start_compare:size(x,1)
+            cur_ind=cur_ind+1; 
+            c(cur_ind)=a^2-(x(j,1)-x(i,1))^2-(x(j,2)-x(i,2))^2;
+        end
        
-       start_compare=start_compare+1;      
+        start_compare=start_compare+1;      
     end
     
     for i=1:size(x,1)
@@ -165,8 +155,8 @@ function Position = GetQuadTrgtPos(VrepAPI, ClientID, QuadNumber)
     persistent QuadTrgtHandle;
     persistent Number;
 
-    StdQuadTrgtName='Quadricopter_target#';
-    %StdQuadTrgtName='Quadricopter_base#';
+    %StdQuadTrgtName='Quadricopter_target#';
+    StdQuadTrgtName='Quadricopter_base#';
     QuadNumber=num2str(QuadNumber);
     QuadTrgtName=strcat(StdQuadTrgtName, QuadNumber);
     
