@@ -33,7 +33,7 @@ function simpleTest()
             x_0f(4,:)=GetQuadTrgtPos(vrep, clientID, 3)';
             x_0(4,:)=x_0f(4,1:2);
             
-            [trgt_alg_x, trgt_alg_y]=OptimizeNextMove([double(main_trgt_pos(1)) double(main_trgt_pos(2))], [1.41;1.41;1.41;1.41 ].*0.9, [2;2;2;2].*0.9, x_0, 1.0, 1.2, 0.7);
+            [trgt_alg_x, trgt_alg_y]=OptimizeNextMove([double(main_trgt_pos(1)) double(main_trgt_pos(2))], [1.41;1.41;1.41;1.41 ].*0.9, [2;2;2;2].*0.9, x_0, 1.0, 1.2, 0.9);
             
             for i=0:3
                 
@@ -63,7 +63,8 @@ function [x,y]=OptimizeNextMove(X,D,d,x_0,A,a,dx)
     tfun = @(x)TargetFunction(x,X,D,d);
     cfun=@(x)ConstraintFunction(x,X,A,a,x_0,dx);
     options = optimoptions('fmincon', 'MaxFunctionEvaluations', 4000);
-    res=fmincon(tfun,x_0,[],[],[],[],[],[],cfun,options);
+    [res minval]=fmincon(tfun,x_0,[],[],[],[],[],[],cfun,options);
+    minval
     x=res(:,1);
     y=res(:,2);
 end
@@ -138,31 +139,41 @@ end
 function Position = GetMainTrgtPos(VrepAPI, ClientID)
     MainTrgtName='Bill_base';
     persistent MainTrgtHandle;
-    %if isempty(MainTrgtHandle)
+    if isempty(MainTrgtHandle)
         [return_code, MainTrgtHandle]=VrepAPI.simxGetObjectHandle(ClientID, MainTrgtName, VrepAPI.simx_opmode_blocking);
-    %end
+    end
     [return_code, Position]=VrepAPI.simxGetObjectPosition (ClientID, MainTrgtHandle, -1, VrepAPI.simx_opmode_blocking);
 end
 
 function SetQuadTrgtPos(VrepAPI, ClientID, QuadNumber, Position)
+    persistent QuadTrgtHandle;
+    persistent Number;
+    
     StdQuadTrgtName='Quadricopter_target#';
     QuadNumber=num2str(QuadNumber);
     QuadTrgtName=strcat(StdQuadTrgtName, QuadNumber);
-    persistent QuadTrgtHandle;
-   % if isempty(QuadTrgtHandle)
+
+    if isempty(QuadTrgtHandle) || Number~=QuadNumber
         [return_code, QuadTrgtHandle]=VrepAPI.simxGetObjectHandle(ClientID, QuadTrgtName, VrepAPI.simx_opmode_blocking);
-   % end
+    end
     return_code=VrepAPI.simxSetObjectPosition(ClientID, QuadTrgtHandle, -1, Position, VrepAPI.simx_opmode_blocking);
+    
+    Number=QuadNumber;
 end
 
 function Position = GetQuadTrgtPos(VrepAPI, ClientID, QuadNumber)
-    %StdQuadTrgtName='Quadricopter_target#';
-    StdQuadTrgtName='Quadricopter_base#';
+    persistent QuadTrgtHandle;
+    persistent Number;
+
+    StdQuadTrgtName='Quadricopter_target#';
+    %StdQuadTrgtName='Quadricopter_base#';
     QuadNumber=num2str(QuadNumber);
     QuadTrgtName=strcat(StdQuadTrgtName, QuadNumber);
-    persistent QuadTrgtHandle;
-    %if isempty(QuadTrgtHandle)
+    
+    if isempty(QuadTrgtHandle) || Number~=QuadNumber
     [return_code, QuadTrgtHandle]=VrepAPI.simxGetObjectHandle(ClientID, QuadTrgtName, VrepAPI.simx_opmode_blocking);
-   % end
+    end
     [return_code, Position]=VrepAPI.simxGetObjectPosition (ClientID, QuadTrgtHandle, -1, VrepAPI.simx_opmode_blocking);
+    
+     Number=QuadNumber;
 end
