@@ -17,19 +17,21 @@ function simpleTest()
         vrep.simxStartSimulation(clientID,vrep.simx_opmode_blocking);
 
         % Now step a few times:
+        N=8;
         sim_dt=0.05;
         sim_t=0;
         idx=1;
         t=0.05;
-        v_0=zeros(4,2,t/sim_dt);   
+        v_0=zeros(N,2,t/sim_dt);   
         
         while(1)
             
             if(sim_t<=0.1*sim_dt)
                 [main_trgt_posd, main_trgt_pos]=GetDisturbedMainTrgtPosition(vrep,clientID);
-                [xd_0, x_0]=GetDisturbedQuadPosition(vrep,clientID,4);
+                [xd_0, x_0]=GetDisturbedQuadPosition(vrep,clientID,N);
              
-                [trgt_alg_x, trgt_alg_y]=OptimizeNextMove( main_trgt_pos(1:2), [1.41;1.41;1.41;1.41 ].*1.0, [0 2 2.828 2; 2 0 2 2.828; 2.828 2 0 2; 2 2.828 2 0].*1.0, v_0,x_0(:,1:2),t,1.2, 1.2, 1, 6);
+                %[trgt_alg_x, trgt_alg_y]=OptimizeNextMove( main_trgt_pos(1:2), [1.41;1.41;1.41;1.41 ].*1.0, [0 2 2.828 2; 2 0 2 2.828; 2.828 2 0 2; 2 2.828 2 0].*1.0, v_0,x_0(:,1:2),t,1.2, 1.2, 1, 6);
+                [trgt_alg_x, trgt_alg_y]=OptimizeNextMove( main_trgt_pos(1:2), [1.41;1;1.41;1;1.41;1;1.41;1].*1.8, [0 1 2 2.236 2.828 2.236 2 1; 1 0 1 1.41 2.236 2 2.236 1.41;  2 1 0 1 2 2.236 2.828 2.236; 2.236 1.41 1 0 1 1.41 2.236 2; 2.828 2.236 2 1 0 1 2 2.236; 2.828 2 2.236 1.41 1 0 1 1.41; 2 2.236 2.828 2.236 2 1 0 1; 1 1.41 2.236 2 2.236 1.41 1 0; ].*1.8, v_0,x_0(:,1:2),t,1.4, 1.6, 1, 6);
                 v_0=[trgt_alg_x(:,end), trgt_alg_y(:,end)];
                 sim_t=t;
                 idx=1;
@@ -37,7 +39,7 @@ function simpleTest()
                 posY=squeeze(x_0(:,2));
             end
             
-            for i=0:3
+            for i=0:N-1
                 posX(i+1)=posX(i+1)+sim_dt*trgt_alg_x(i+1,idx);
                 posY(i+1)=posY(i+1)+sim_dt*trgt_alg_y(i+1,idx);
                 SetQuadTrgtPos(vrep, clientID, i, [posX(i+1) posY(i+1) x_0(i+1,3)]);                                
