@@ -160,6 +160,7 @@ Dane problemu:
 \item $d$ - zadana macierz odległości do sąsiada
 \item $A$  - minimalna odległość do celu
 \item $a$ -  minimalna odległość do sąsiada
+\item $L$ - liczba dronów
 \end{itemize}
 \subsection{Funkcja celu}
 
@@ -174,12 +175,17 @@ Opis zmiennych:
 \item $x$ - zmienne pozycji 
 \item $D$ - zadana odległość od celu
 \item $d$ - zadana macierz odległości do sąsiada
+\item $L$ - liczba dronów
+\item $w_i$ - wagi
 \end{itemize}
 \subsection{Funkcja więzów}
-\begin{equation}
-f_{constraints}(x)= \underbrace{\sum_{i=0}^{L}\lbrace D_i^2 - [(X_x -x_{xi})^2+(X_y -x_{yi})^2] \rbrace ^2}_\text{Odległość od celu} +
-\underbrace{\sum_{i=0}^{L}\sum_{j=0}^{L}w_i\lbrace d_{ij}^2 -(X_y -x_{yi})^2]\rbrace ^2}_\text{Odległości pomiędzy dronami}
-\end{equation}
+
+\[ f_{constraints}(x)_k=\begin{cases} 
+      A^2-[(X_x+x_x)^2+(X_y+x_y)^2] & k\in{ 0,..,L-1} \\
+      a^2-[(x_{xj}+x_{xi})^2+(x_{yj}+x_{yi})^2] & k\in{ L,..,\binom{L}{2}} 
+      
+   \end{cases}
+\]
 Zwraca c i ceq do procedury numerycznej
 Opis zmiennych:
 \begin{itemize}
@@ -189,6 +195,7 @@ Opis zmiennych:
 \item $a$ -  minimalna odległość do sąsiada
 \item $x_0$ - pozycja początkowa
 \item $dx$ - maksymalne przesunięcie
+\item $L$ - liczba dronów
 \end{itemize}
 \section{Implementacja}
 Pętla główna programu obliczającego trajektorię dronów zaprezentowana jest na poniższym diagramie akcji.
