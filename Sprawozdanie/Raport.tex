@@ -162,6 +162,12 @@ Dane problemu:
 \item $a$ -  minimalna odległość do sąsiada
 \end{itemize}
 \subsection{Funkcja celu}
+
+\begin{equation}
+f_{target}(x)= \underbrace{\sum_{i=0}^{L}\lbrace D_i^2 - [(X_x -x_{xi})^2+(X_y -x_{yi})^2] \rbrace ^2}_\text{Odległość od celu} +
+\underbrace{\sum_{i=0}^{L}\sum_{j=0}^{L}w_i\lbrace d_{ij}^2 -(X_y -x_{yi})^2]\rbrace ^2}_\text{Odległości pomiędzy dronami}
+\end{equation}
+
 Opis zmiennych:
 \begin{itemize}
 \item $X$ - zmienna celu
@@ -170,6 +176,11 @@ Opis zmiennych:
 \item $d$ - zadana macierz odległości do sąsiada
 \end{itemize}
 \subsection{Funkcja więzów}
+\begin{equation}
+f_{constraints}(x)= \underbrace{\sum_{i=0}^{L}\lbrace D_i^2 - [(X_x -x_{xi})^2+(X_y -x_{yi})^2] \rbrace ^2}_\text{Odległość od celu} +
+\underbrace{\sum_{i=0}^{L}\sum_{j=0}^{L}w_i\lbrace d_{ij}^2 -(X_y -x_{yi})^2]\rbrace ^2}_\text{Odległości pomiędzy dronami}
+\end{equation}
+Zwraca c i ceq do procedury numerycznej
 Opis zmiennych:
 \begin{itemize}
 \item $X$ - zmienna celu
