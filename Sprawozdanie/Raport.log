@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  13 MAY 2018 19:56
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  13 MAY 2018 20:25
 entering extended mode
 **./Raport.tex
 (Raport.tex
@@ -1572,37 +1572,49 @@ File: simulation1.png Graphic file (type png)
 Package pdftex.def Info: simulation1.png  used on input line 142.
 (pdftex.def)             Requested size: 266.99684pt x 154.07524pt.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 148.
-<uproszczony_digram_akcji.png, id=10, 472.76625pt x 490.83376pt>
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 149.
+LaTeX Font Info:    Try loading font information for OMS+phv on input line 158.
+
+("C:\Users\jerzy\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\omsphv.fd"
+File: omsphv.fd 
+)
+LaTeX Font Info:    Font shape `OMS/phv/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 158.
+[2 <./simulation1.png (PNG copy)>]
+<uproszczony_digram_akcji.png, id=17, 472.76625pt x 490.83376pt>
 File: uproszczony_digram_akcji.png Graphic file (type png)
 <use uproszczony_digram_akcji.png>
-Package pdftex.def Info: uproszczony_digram_akcji.png  used on input line 156.
+Package pdftex.def Info: uproszczony_digram_akcji.png  used on input line 186.
 (pdftex.def)             Requested size: 236.38254pt x 245.41628pt.
-[2 <./simulation1.png (PNG copy)>]
+ [3 <./uproszczony_digram_akcji.png>]
 
 Package caption Warning: Unused \captionsetup[table] on input line 71.
 See the caption package documentation for explanation.
 
-[3 <./uproszczony_digram_akcji.png>] (Raport.aux)
+[4] (Raport.aux)
 Package logreq Info: Writing requests to 'Raport.run.xml'.
 \openout1 = `Raport.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 33912 strings out of 493305
- 780059 string characters out of 3129803
+ 33933 strings out of 493305
+ 780460 string characters out of 3129803
  1370130 words of memory out of 3000000
- 36897 multiletter control sequences out of 15000+200000
- 27565 words of font info for 43 fonts, out of 3000000 for 9000
+ 36915 multiletter control sequences out of 15000+200000
+ 28405 words of font info for 46 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  74i,11n,128p,822b,742s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc
-}<C:/Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/helvetic/uhv
-b8a.pfb><C:/Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/helve
-tic/uhvr8a.pfb>
-Output written on Raport.pdf (3 pages, 174828 bytes).
+}<C:/Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/
+cm/cmmi10.pfb><C:/Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/pub
+lic/amsfonts/cm/cmmi8.pfb><C:/Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fon
+ts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/jerzy/AppData/Local/Programs/MiK
+TeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/jerzy/AppData/Local
+/Programs/MiKTeX 2.9/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Users/jerzy/AppDat
+a/Local/Programs/MiKTeX 2.9/fonts/type1/urw/helvetic/uhvr8a.pfb>
+Output written on Raport.pdf (4 pages, 209428 bytes).
 PDF statistics:
- 28 PDF objects out of 1000 (max. 8388607)
+ 47 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  23 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -145,10 +145,40 @@ Symulacja wyżej opisanego zadania została wykonana w programie symulacyjnym V-
 \end{figure}
 
 \section{Opis algorytmu}
-\subsection{Problem optymalizacji}
-\subsection{Funkcja celu}
-\subsection{Funkcja więzów}
 
+\subsection{Problem optymalizacji}
+W celu wyznaczenia optymalnej pozycji dronów rozwiązywany jest nieliniowy problem optymalizacji z wieloma zmiennymi i ograniczeniami. Formalny zapis problemu:
+\begin{equation}
+min_{x}
+\end{equation}
+
+
+Dane problemu:
+\begin{itemize}
+\item $X$ - zmienna celu
+\item $D$ - zadana odległość od celu
+\item $d$ - zadana macierz odległości do sąsiada
+\item $A$  - minimalna odległość do celu
+\item $a$ -  minimalna odległość do sąsiada
+\end{itemize}
+\subsection{Funkcja celu}
+Opis zmiennych:
+\begin{itemize}
+\item $X$ - zmienna celu
+\item $x$ - zmienne pozycji 
+\item $D$ - zadana odległość od celu
+\item $d$ - zadana macierz odległości do sąsiada
+\end{itemize}
+\subsection{Funkcja więzów}
+Opis zmiennych:
+\begin{itemize}
+\item $X$ - zmienna celu
+\item $x$ - zmienne pozycji
+\item $A$  - minimalna odległość do celu
+\item $a$ -  minimalna odległość do sąsiada
+\item $x_0$ - pozycja początkowa
+\item $dx$ - maksymalne przesunięcie
+\end{itemize}
 \section{Implementacja}
 Pętla główna programu obliczającego trajektorię dronów zaprezentowana jest na poniższym diagramie akcji.
 \begin{figure}[H]
@@ -157,6 +187,7 @@ Pętla główna programu obliczającego trajektorię dronów zaprezentowana jest
 \caption{Uproszczony diagram akcji.}
 
 \end{figure}
+Zadanie potymalizacji jest rozwiązywane przez funkcję fmincon(..).
 \section{Wynik działania}
 \section{Wnioski}
 \end{document}
