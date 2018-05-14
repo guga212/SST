@@ -145,14 +145,25 @@ Symulacja wyżej opisanego zadania została wykonana w programie symulacyjnym V-
 \end{figure}
 
 \section{Opis algorytmu}
-
+Zadaniem, które mają wykonać drony, jest podążanie za poruszającym się człowiekiem w odpowiedniej formacji (kwadrat, wielokąt). Założone zostało, że drony startują z losowych miejsc na planszy i znają położenie zbiega. Muszą one podążyć w jego kierunku optymalną ścieżką, otoczyć go w formacji (która na bieżąco tworzona jest w czasie ich lotu) a następnie go śledzić. Przy tym nie powinno dojść do sytuacji, w której dwa drony zderzą się ze sobą lub ze śledzonym człowiekiem. Zadanie to zostało opisane za pomocą nieliniowego problemu optymalizacji.
 \subsection{Problem optymalizacji}
-W celu wyznaczenia optymalnej pozycji dronów rozwiązywany jest nieliniowy problem optymalizacji z wieloma zmiennymi i ograniczeniami. Formalny zapis problemu:
+W celu wyznaczenia optymalnej pozycji dronów rozwiązywany jest nieliniowy problem optymalizacji wielu zmiennych z liniowymi i nieliniowymi oraz z równościowymi i nierównościowymi ograniczeniami. Formalny zapis problemu:
 \begin{equation}
-min_{x}
+\operatorname*{min}_x  f(x)=
+	\begin{cases}
+	\ c(x) \leq 0
+	\\
+	ceq(x)=0
+	\\
+	A \cdot x\leq b
+	\\
+	Aeq \cdot x =beq
+	\\
+	lb \leq x \leq ub
+	\end{cases}
 \end{equation}
 
-
+Uwzględnione zostały tylko więzy opisane funkcją $c(x)$.
 Dane problemu:
 \begin{itemize}
 \item $X$ - zmienna celu
