@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  13 MAY 2018 21:52
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  14 MAY 2018 18:26
 entering extended mode
 **./Raport.tex
 (Raport.tex
@@ -1581,12 +1581,24 @@ File: omsphv.fd
 LaTeX Font Info:    Font shape `OMS/phv/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 158.
 [2 <./simulation1.png (PNG copy)>]
-<uproszczony_digram_akcji.png, id=17, 472.76625pt x 490.83376pt>
+Overfull \hbox (19.78607pt too wide) in paragraph at lines 166--167
+\T1/phv/m/n/10.95 nato-mi-ast opisuj¦ ge-ometri¦ »¡-danej for-ma-cji dronów, po
+przez zdefin-iowanie za-le-canych odlegªo±ci
+ []
+
+
+Overfull \hbox (0.17274pt too wide) in paragraph at lines 190--193
+\T1/phv/m/n/10.95 Pierwsza cz¦±¢ rów-na-nia opisuj¦ warunek na za-chowanie min-
+i-mal-nej odlegªo±ci od celu. Druga
+ []
+
+[3]
+<uproszczony_digram_akcji.png, id=23, 472.76625pt x 490.83376pt>
 File: uproszczony_digram_akcji.png Graphic file (type png)
 <use uproszczony_digram_akcji.png>
-Package pdftex.def Info: uproszczony_digram_akcji.png  used on input line 204.
+Package pdftex.def Info: uproszczony_digram_akcji.png  used on input line 207.
 (pdftex.def)             Requested size: 236.38254pt x 245.41628pt.
- [3]
+
 
 Package caption Warning: Unused \captionsetup[table] on input line 71.
 See the caption package documentation for explanation.
@@ -1603,7 +1615,7 @@ Here is how much of TeX's memory you used:
  36917 multiletter control sequences out of 15000+200000
  33031 words of font info for 49 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 74i,12n,128p,822b,742s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 74i,11n,128p,822b,742s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc
 }<C:/Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/
 cm/cmex10.pfb><C:/Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/pub
@@ -1615,7 +1627,7 @@ ppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/
 Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/helvetic/uhvb8a.p
 fb><C:/Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/helvetic/u
 hvr8a.pfb>
-Output written on Raport.pdf (4 pages, 234730 bytes).
+Output written on Raport.pdf (4 pages, 235969 bytes).
 PDF statistics:
  55 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

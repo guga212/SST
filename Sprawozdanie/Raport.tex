@@ -163,7 +163,7 @@ Dane problemu:
 \item $L$ - liczba dronów
 \end{itemize}
 \subsection{Funkcja celu}
-
+Pierwsza część równania opisuję zadanie zachowanie odpowiedniej odległości od celu. Druga natomiast opisuję geometrię żądanej  formacji dronów, poprzez zdefiniowanie zalecanych odległości pomiędzy  pomiędzy parami dronów.
 \begin{equation}
 f_{target}(x)= \underbrace{\sum_{i=0}^{L}\lbrace D_i^2 - [(X_x -x_{xi})^2+(X_y -x_{yi})^2] \rbrace ^2}_\text{Odległość od celu} +
 \underbrace{\sum_{i=0}^{L}\sum_{j=0}^{L}w_i\lbrace d_{ij}^2 -(X_y -x_{yi})^2]\rbrace ^2}_\text{Odległości pomiędzy dronami}
@@ -178,15 +178,17 @@ Opis zmiennych:
 \item $L$ - liczba dronów
 \item $w_i$ - wagi
 \end{itemize}
-\subsection{Funkcja więzów}
 
-\[ f_{constraints}(x)_k=\begin{cases} 
+Powyższa funkcja jest wczytywana do procedury optymalizacyjnej rozwiązującej zadanie optymalizacji kwadratowej.
+\subsection{Funkcja więzów} 
+Funkcja $c(x)$ definiuje więzy narzucone na układ.
+\[ f_{constraints}(x)_k=c(x)=\begin{cases} 
       A^2-[(X_x+x_x)^2+(X_y+x_y)^2] & k\in{ 0,..,L-1} \\
       a^2-[(x_{xj}+x_{xi})^2+(x_{yj}+x_{yi})^2] & k\in{ L,..,\binom{L}{2}} 
       
    \end{cases}
 \]
-Zwraca c i ceq do procedury numerycznej
+Pierwsza część równania opisuję warunek na zachowanie minimalnej  odległości od celu. Druga natomiast opisuję minimalne dopuszczalne odległości pomiędzy parami dronów. Dla $L$ statków powietrznych definiujemy $\binom{L}{2}$ warunków.
 Opis zmiennych:
 \begin{itemize}
 \item $X$ - zmienna celu
@@ -197,6 +199,7 @@ Opis zmiennych:
 \item $dx$ - maksymalne przesunięcie
 \item $L$ - liczba dronów
 \end{itemize}
+Powyższa funkcja jest wczytywana do procedury optymalizacyjnej rozwiązującej zadanie optymalizacji kwadratowej.
 \section{Implementacja}
 Pętla główna programu obliczającego trajektorię dronów zaprezentowana jest na poniższym diagramie akcji.
 \begin{figure}[H]
