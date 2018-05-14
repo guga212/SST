@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  14 MAY 2018 22:18
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  14 MAY 2018 22:54
 entering extended mode
 **./Raport.tex
 (Raport.tex
@@ -1599,12 +1599,11 @@ File: uproszczony_digram_akcji.png Graphic file (type png)
 <use uproszczony_digram_akcji.png>
 Package pdftex.def Info: uproszczony_digram_akcji.png  used on input line 218.
 (pdftex.def)             Requested size: 236.38254pt x 245.41628pt.
-[4 <./uproszczony_digram_akcji.png>]
 
 Package caption Warning: Unused \captionsetup[table] on input line 71.
 See the caption package documentation for explanation.
 
-[5] (Raport.aux)
+[4 <./uproszczony_digram_akcji.png>] [5] (Raport.aux)
 Package logreq Info: Writing requests to 'Raport.run.xml'.
 \openout1 = `Raport.run.xml'.
 
@@ -1628,7 +1627,7 @@ ppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/
 Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/helvetic/uhvb8a.p
 fb><C:/Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/helvetic/u
 hvr8a.pfb>
-Output written on Raport.pdf (5 pages, 241252 bytes).
+Output written on Raport.pdf (5 pages, 240565 bytes).
 PDF statistics:
  58 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
