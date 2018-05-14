@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  14 MAY 2018 22:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.4.1)  14 MAY 2018 23:08
 entering extended mode
 **./Raport.tex
 (Raport.tex
@@ -1582,37 +1582,43 @@ File: omsphv.fd
 )
 LaTeX Font Info:    Font shape `OMS/phv/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 169.
+<blok_axa.png, id=14, 274.77657pt x 250.68657pt>
+File: blok_axa.png Graphic file (type png)
+<use blok_axa.png>
+Package pdftex.def Info: blok_axa.png  used on input line 206.
+(pdftex.def)             Requested size: 137.38794pt x 125.34297pt.
 
-Overfull \hbox (19.78607pt too wide) in paragraph at lines 177--178
-\T1/phv/m/n/10.95 nato-mi-ast opisuj¦ ge-ometri¦ »¡-danej for-ma-cji dronów, po
-przez zdefin-iowanie za-le-canych odlegªo±ci
+Underfull \hbox (badness 10000) in paragraph at lines 199--208
+
  []
 
 [3]
-Overfull \hbox (0.17274pt too wide) in paragraph at lines 201--204
+Overfull \hbox (0.17274pt too wide) in paragraph at lines 255--258
 \T1/phv/m/n/10.95 Pierwsza cz¦±¢ rów-na-nia opisuj¦ warunek na za-chowanie min-
 i-mal-nej odlegªo±ci od celu. Druga
  []
 
-<uproszczony_digram_akcji.png, id=23, 472.76625pt x 490.83376pt>
+[4 <./blok_axa.png>]
+<uproszczony_digram_akcji.png, id=27, 472.76625pt x 490.83376pt>
 File: uproszczony_digram_akcji.png Graphic file (type png)
 <use uproszczony_digram_akcji.png>
-Package pdftex.def Info: uproszczony_digram_akcji.png  used on input line 218.
+Package pdftex.def Info: uproszczony_digram_akcji.png  used on input line 272.
 (pdftex.def)             Requested size: 236.38254pt x 245.41628pt.
+
 
 Package caption Warning: Unused \captionsetup[table] on input line 71.
 See the caption package documentation for explanation.
 
-[4 <./uproszczony_digram_akcji.png>] [5] (Raport.aux)
+[5 <./uproszczony_digram_akcji.png>] (Raport.aux)
 Package logreq Info: Writing requests to 'Raport.run.xml'.
 \openout1 = `Raport.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 33936 strings out of 493305
- 780490 string characters out of 3129803
+ 33941 strings out of 493305
+ 780569 string characters out of 3129803
  1373130 words of memory out of 3000000
- 36917 multiletter control sequences out of 15000+200000
+ 36921 multiletter control sequences out of 15000+200000
  33031 words of font info for 49 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  74i,12n,128p,822b,742s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1627,9 +1633,9 @@ ppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/
 Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/helvetic/uhvb8a.p
 fb><C:/Users/jerzy/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/helvetic/u
 hvr8a.pfb>
-Output written on Raport.pdf (5 pages, 240565 bytes).
+Output written on Raport.pdf (5 pages, 245510 bytes).
 PDF statistics:
- 58 PDF objects out of 1000 (max. 8388607)
+ 59 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 23 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 28 words of extra memory for PDF output out of 10000 (max. 10000000)
 

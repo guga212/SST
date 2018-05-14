@@ -174,7 +174,61 @@ Dane problemu:
 \item $L$ - liczba dronów
 \end{itemize}
 \subsection{Funkcja celu}
-Pierwsza część równania opisuję zadanie zachowanie odpowiedniej odległości od celu. Druga natomiast opisuję geometrię żądanej  formacji dronów, poprzez zdefiniowanie zalecanych odległości pomiędzy  pomiędzy parami dronów.
+Funkcja celu składa się zasadniczo z dwóch członów. Pierwszy z nich odpowiada za ich odległość od śledzonego człowieka. Znana jest pozycja każdego z L dronów, a także położenie celu, w kierunku którego mają lecieć. Zastosowana została więc minimalizacja kwadratu różnicy zadanej odległości między celem, a każdym z dronów.
+Drugi człon równania odpowiada za minimalizację odległości pomiędzy dronami. Parametr d to macierz, która określa położenie każdego z dronów w stosunku do jego sąsiada o strukturze:
+$$
+d=
+\begin{bmatrix}
+d_{11} &
+d_{12} &
+\cdots &
+d_{1L}\\
+d_{21} &
+d_{22} &
+\cdots &
+d_{dL}\\
+\vdots &
+\vdots &
+\ddots & \vdots
+\\
+d_{L1} &
+d_{L2} &
+\cdots &
+d_{LL}
+\end{bmatrix}
+$$
+gdzie dij – jest odległością między i-tym, a j-tym dronem. W szczególności gdy i=j, to dij wynosi 0.
+\newline
+\newline
+Przykładowo, dla czterech dronów i zadanej formacji o kształcie kwadratu o boku a:
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{blok_axa.png}
+\caption{Formacja dla czterech dronów.}
+\end{figure}
+
+Macierz ma postać:
+$$
+d=
+\begin{bmatrix}
+0 &
+a &
+a\sqrt{2} &
+a\\
+a &
+0 &
+a &
+a\sqrt{2}\\
+a\sqrt{2} &
+a &
+0 & 
+a &\\
+a &
+a\sqrt{2} &
+a &
+0
+\end{bmatrix}
+$$
 \begin{equation}
 f_{target}(x)= \underbrace{\sum_{i=0}^{L}\lbrace D_i^2 - [(X_x -x_{xi})^2+(X_y -x_{yi})^2] \rbrace ^2}_\text{Odległość od celu} +
 \underbrace{\sum_{i=0}^{L}\sum_{j=0}^{L}w_i\lbrace d_{ij}^2 -(X_y -x_{yi})^2]\rbrace ^2}_\text{Odległości pomiędzy dronami}
