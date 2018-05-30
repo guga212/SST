@@ -31,7 +31,7 @@ function simpleTest()
                 [main_trgt_posd, main_trgt_pos]=GetDisturbedMainTrgtPosition(vrep,clientID);
                 [xd_0, x_0]=GetDisturbedQuadPosition(vrep,clientID,N);
              
-                [trgt_alg_x, trgt_alg_y]=OptimizeNextMove( main_trgt_pos(1:2), [1.41;1.41;1.41;1.41 ].*1.0, [0 2 2.828 2; 2 0 2 2.828; 2.828 2 0 2; 2 2.828 2 0].*1.0,a_0,v_0,x_0(:,1:2),t,1.2, 1.2, 1, 6);
+                [trgt_alg_x, trgt_alg_y]=OptimizeNextMove( main_trgt_pos(1:2), [1.41;1.41;1.41;1.41 ].*1.0, [0 2 2.828 2; 2 0 2 2.828; 2.828 2 0 2; 2 2.828 2 0].*1.0,a_0,v_0,x_0(:,1:2),t,1.2, 1.2, 0.5, 6);
                 %[trgt_alg_x, trgt_alg_y]=OptimizeNextMove( main_trgt_pos(1:2), [1.41;1;1.41;1;1.41;1;1.41;1].*1.8, [0 1 2 2.236 2.828 2.236 2 1; 1 0 1 1.41 2.236 2 2.236 1.41;  2 1 0 1 2 2.236 2.828 2.236; 2.236 1.41 1 0 1 1.41 2.236 2; 2.828 2.236 2 1 0 1 2 2.236; 2.828 2 2.236 1.41 1 0 1 1.41; 2 2.236 2.828 2.236 2 1 0 1; 1 1.41 2.236 2 2.236 1.41 1 0; ].*1.8, v_0,x_0(:,1:2),t,1.4, 1.6, 1, 6);
                 a_0=[trgt_alg_x(:,end), trgt_alg_y(:,end)];               
                 sim_t=t;
@@ -94,7 +94,7 @@ end
 %d_min minimalna odleglosc do sasiada
 %V_max maksymalna predkosc
 %a_max maksymalne przyspieszenie
-function [Vx,Vy]=OptimizeNextMove(X,D,d,a_0,v_0,x_0,t,D_min,d_min,V_max,a_max)
+function [a_x,a_y]=OptimizeNextMove(X,D,d,a_0,v_0,x_0,t,D_min,d_min,V_max,a_max)
     tfun = @(a)TargetFunction(a,X,D,d,v_0,x_0,t);
    %[res, minval]=fminunc(tfun, a_0);
 
@@ -102,11 +102,13 @@ function [Vx,Vy]=OptimizeNextMove(X,D,d,a_0,v_0,x_0,t,D_min,d_min,V_max,a_max)
     cfun=@(a)ConstraintFunction(a,X,D_min,d_min,a_0,v_0,x_0,t,V_max,a_max);
     %options = optimoptions('fmincon','Display','off');
     %options = optimoptions('fmincon','Algorithm','sqp','MaxFunctionEvaluations',24000,'MaxIterations', 3200);
-    options = optimoptions('fmincon','Algorithm','sqp', 'SpecifyObjectiveGradient',false);
-    [res, minval,exitflag,output,lambda,grad]=fmincon(tfun,a_0,[],[],[],[],[],[],cfun,options);
+    options = optimoptions('fmincon','Algorithm','sqp', 'SpecifyObjectiveGradient', true);
+    a_ub=(a_0.*0)+a_max;
+    a_lb=(a_0.*0)-a_max;
+    [res, minval,exitflag,output,lambda,grad]=fmincon(tfun,a_0,[],[],[],[],a_lb,a_ub,cfun,options);
 
-    Vx=squeeze(res(:,1,:));
-    Vy=squeeze(res(:,2,:));
+    a_x=squeeze(res(:,1,:));
+    a_y=squeeze(res(:,2,:));
 end
 
 %a zmienne przysp 
@@ -164,50 +166,53 @@ function [out,grad]=TargetFunction(a,X,D,d,v_0,x_0,t)
             out=out+weight*(v(i,1,j)^2+v(i,2,j)^2);
         end
     end
-    
+
     %Gradient required
     if nargout > 1 
         for i=1:size(v,1)
            for j=1:size(v,3)
                
                % Gradient minimize distance from main trgt
+               grad1(i,1,j)=0;
+               grad1(i,2,j)=0;
                grad1(i,1,j)=0.5*dt^2;
                grad1(i,2,j)=0.5*dt^2;
-               for k=1:size(v,3)-1
-                   grad1(i,1,j)=grad1(i,1,j)+dt;
-                   grad1(i,2,j)=grad1(i,2,j)+dt;
+               for k=1:size(v,3)-j
+                   grad1(i,1,j)=grad1(i,1,j)+dt^2;
+                   grad1(i,2,j)=grad1(i,2,j)+dt^2;
                end
-               grad1(i,1,j)=2*(D(i)^2-(X(1,1)-x(i,1))^2)*2*(X(1,1)-x(i,1))*-grad1(i,1,j);
-               grad1(i,2,j)=2*(D(i)^2-(X(1,2)-x(i,2))^2)*2*(X(1,2)-x(i,2))*-grad1(i,2,j);
+               grad1(i,1,j)=2*(D(i)^2-(X(1,1)-x(i,1))^2-(X(1,2)-x(i,2))^2)*-2*(X(1,1)-x(i,1))*-grad1(i,1,j);
+               grad1(i,2,j)=2*(D(i)^2-(X(1,1)-x(i,1))^2-(X(1,2)-x(i,2))^2)*-2*(X(1,2)-x(i,2))*-grad1(i,2,j);
                
                
                % Gradient minimize formation error
                grad2(i,1,j)=0;
-               grad2(i,2,j)=0;
-               
-               for n=1:size(a,1)               
-                   grad2(i,1,j)=grad2(i,1,j)+0.5*dt^2;
-                   grad2(i,2,j)=grad2(i,2,j)+0.5*dt^2;
-                   for k=1:size(v,3)-1
-                       grad2(i,1,j)=grad2(i,1,j)+dt;
-                       grad2(i,2,j)=grad2(i,2,j)+dt;
-                   end               
-                   grad2(i,1,j)=2*weight*(d(i,n)^2-(x(i,1)-x(n,1))^2)*2*(x(i,1)-x(n,1))*-grad2(i,1,j);
-                   grad2(i,2,j)=2*weight*(d(i,n)^2-(x(i,2)-x(n,2))^2)*2*(x(i,2)-x(n,2))*-grad2(i,1,j);
+               grad2(i,2,j)=0;                                                                        
+               grad2_comp(i,1,j)=0.5*dt^2;
+               grad2_comp(i,2,j)=0.5*dt^2;
+               for k=1:size(v,3)-j
+                    grad2_comp(i,1,j)=grad2_comp(i,1,j)+dt^2;
+                    grad2_comp(i,2,j)=grad2_comp(i,2,j)+dt^2;
                end
+               for n=1:size(a,1) 
+                   grad2(i,1,j)= grad2(i,1,j)+2*weight*(d(i,n)^2-(x(i,1)-x(n,1))^2-(x(i,2)-x(n,2))^2)*-2*(x(i,1)-x(n,1))*grad2_comp(i,1,j);
+                   grad2(i,2,j)= grad2(i,2,j)+2*weight*(d(i,n)^2-(x(i,1)-x(n,1))^2-(x(i,2)-x(n,2))^2)*-2*(x(i,2)-x(n,2))*grad2_comp(i,2,j);
+               end
+               grad2(i,1,j)=grad2(i,1,j)*2; %%multiply by two cause target function do same error calculation twice
+               grad2(i,2,j)=grad2(i,2,j)*2; %%multiply by two cause target function do same error calculation twice
                
-               
-               
-               % Gradient minimize formation error
+               % Minimize velocity square(loss function)
                grad3(i,1,j)=0;
                grad3(i,2,j)=0;
-                 for k=1:size(v,3)-1
-                   grad3(i,1,j)=grad3(i,1,j)+dt;
-                   grad3(i,2,j)=grad3(i,2,j)+dt;
-                 end
-               grad3(i,1,j)=2*weight*v(i,1,j)*grad3(i,1,j);
+               for k=1:j
+                    grad3(i,1,j)=grad3(i,1,j)+dt;
+                    grad3(i,2,j)=grad3(i,2,j)+dt;
+               end
+               grad3(i,1,j)=2*weight*v(i,1,j)*grad3(i,1,j);                              
                grad3(i,2,j)=2*weight*v(i,2,j)*grad3(i,2,j);
                
+               
+               %%Summarize gradients
                grad(i,1,j)=grad1(i,1,j)+grad2(i,1,j)+grad3(i,1,j);
                grad(i,2,j)=grad1(i,2,j)+grad2(i,2,j)+grad3(i,2,j);
            end           
@@ -285,36 +290,7 @@ function [c,ceq, gradc, gradceq]=ConstraintFunction(a,X,D_min,d_min,a_0,v_0,x_0,
             c(cur_ind)=v(i,1,k)^2+v(i,2,k)^2-V_max^2;
         end
     end
-     
-    %Maximal acceleration
-    for i=1:size(a,1)
-        for j=1:size(a,3)
-            cur_ind=cur_ind+1;          
-            c(cur_ind)=a(i,1,j)^2+a(i,2,j)^2-a_max^2;
-        end
-    end
-    
-    
-   % Gradient of constraints
-   % if nargout>2
-%         v_symb=sym(v);
-%         c_symb=sym(c);
-%         gradceq=[];
-%         gradc=[];
-   % end
-   
-     %Minimal distance from main target in every position
-%     for i=1:size(x,1)
-%         for j=1:1
-%             cur_ind=cur_ind+1; 
-%             dx2=(X(1,1)-x(i,1,j))^2;
-%             dy2=(X(1,2)-x(i,2,j))^2;
-%             sum=dx2+dy2;
-%             c(cur_ind)=D_min^2-sum;
-%             %c(cur_ind)=A^2-(X(1,1)-x(i,1,j))^2-(X(1,2)-x(i,2,j))^2;
-%         end
-%     end
-    
+        
 end
 
 function Position = GetMainTrgtPos(VrepAPI, ClientID)
