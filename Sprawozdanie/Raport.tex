@@ -145,14 +145,25 @@ Symulacja wyżej opisanego zadania została wykonana w programie symulacyjnym V-
 \end{figure}
 
 \section{Opis algorytmu}
-
+Zadaniem, które mają wykonać drony, jest podążanie za poruszającym się człowiekiem w odpowiedniej formacji (kwadrat, wielokąt). Założone zostało, że drony startują z losowych miejsc na planszy i znają położenie zbiega. Muszą one podążyć w jego kierunku optymalną ścieżką, otoczyć go w formacji (która na bieżąco tworzona jest w czasie ich lotu) a następnie go śledzić. Przy tym nie powinno dojść do sytuacji, w której dwa drony zderzą się ze sobą lub ze śledzonym człowiekiem. Zadanie to zostało opisane za pomocą nieliniowego problemu optymalizacji.
 \subsection{Problem optymalizacji}
-W celu wyznaczenia optymalnej pozycji dronów rozwiązywany jest nieliniowy problem optymalizacji z wieloma zmiennymi i ograniczeniami. Formalny zapis problemu:
+W celu wyznaczenia optymalnej pozycji dronów rozwiązywany jest nieliniowy problem optymalizacji wielu zmiennych z liniowymi i nieliniowymi oraz z równościowymi i nierównościowymi ograniczeniami. Formalny zapis problemu:
 \begin{equation}
-min_{x}
+\operatorname*{min}_x  f(x)=
+	\begin{cases}
+	\ c(x) \leq 0
+	\\
+	ceq(x)=0
+	\\
+	A \cdot x\leq b
+	\\
+	Aeq \cdot x =beq
+	\\
+	lb \leq x \leq ub
+	\end{cases}
 \end{equation}
 
-
+Uwzględnione zostały tylko więzy opisane funkcją $c(x)$.
 Dane problemu:
 \begin{itemize}
 \item $X$ - zmienna celu
@@ -163,7 +174,61 @@ Dane problemu:
 \item $L$ - liczba dronów
 \end{itemize}
 \subsection{Funkcja celu}
+Funkcja celu składa się zasadniczo z dwóch członów. Pierwszy z nich odpowiada za ich odległość od śledzonego człowieka. Znana jest pozycja każdego z L dronów, a także położenie celu, w kierunku którego mają lecieć. Zastosowana została więc minimalizacja kwadratu różnicy zadanej odległości między celem, a każdym z dronów.
+Drugi człon równania odpowiada za minimalizację odległości pomiędzy dronami. Parametr d to macierz, która określa położenie każdego z dronów w stosunku do jego sąsiada o strukturze:
+$$
+d=
+\begin{bmatrix}
+d_{11} &
+d_{12} &
+\cdots &
+d_{1L}\\
+d_{21} &
+d_{22} &
+\cdots &
+d_{dL}\\
+\vdots &
+\vdots &
+\ddots & \vdots
+\\
+d_{L1} &
+d_{L2} &
+\cdots &
+d_{LL}
+\end{bmatrix}
+$$
+gdzie dij – jest odległością między i-tym, a j-tym dronem. W szczególności gdy i=j, to dij wynosi 0.
+\newline
+\newline
+Przykładowo, dla czterech dronów i zadanej formacji o kształcie kwadratu o boku a:
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{blok_axa.png}
+\caption{Formacja dla czterech dronów.}
+\end{figure}
 
+Macierz ma postać:
+$$
+d=
+\begin{bmatrix}
+0 &
+a &
+a\sqrt{2} &
+a\\
+a &
+0 &
+a &
+a\sqrt{2}\\
+a\sqrt{2} &
+a &
+0 & 
+a &\\
+a &
+a\sqrt{2} &
+a &
+0
+\end{bmatrix}
+$$
 \begin{equation}
 f_{target}(x)= \underbrace{\sum_{i=0}^{L}\lbrace D_i^2 - [(X_x -x_{xi})^2+(X_y -x_{yi})^2] \rbrace ^2}_\text{Odległość od celu} +
 \underbrace{\sum_{i=0}^{L}\sum_{j=0}^{L}w_i\lbrace d_{ij}^2 -(X_y -x_{yi})^2]\rbrace ^2}_\text{Odległości pomiędzy dronami}
@@ -178,15 +243,17 @@ Opis zmiennych:
 \item $L$ - liczba dronów
 \item $w_i$ - wagi
 \end{itemize}
-\subsection{Funkcja więzów}
 
-\[ f_{constraints}(x)_k=\begin{cases} 
+Powyższa funkcja jest wczytywana do procedury optymalizacyjnej rozwiązującej zadanie optymalizacji kwadratowej.
+\subsection{Funkcja więzów} 
+Funkcja $c(x)$ definiuje więzy narzucone na układ.
+\[ f_{constraints}(x)_k=c(x)=\begin{cases} 
       A^2-[(X_x+x_x)^2+(X_y+x_y)^2] & k\in{ 0,..,L-1} \\
       a^2-[(x_{xj}+x_{xi})^2+(x_{yj}+x_{yi})^2] & k\in{ L,..,\binom{L}{2}} 
       
    \end{cases}
 \]
-Zwraca c i ceq do procedury numerycznej
+Pierwsza część równania opisuję warunek na zachowanie minimalnej  odległości od celu. Druga natomiast opisuję minimalne dopuszczalne odległości pomiędzy parami dronów. Dla $L$ statków powietrznych definiujemy $\binom{L}{2}$ warunków.
 Opis zmiennych:
 \begin{itemize}
 \item $X$ - zmienna celu
@@ -197,6 +264,7 @@ Opis zmiennych:
 \item $dx$ - maksymalne przesunięcie
 \item $L$ - liczba dronów
 \end{itemize}
+Powyższa funkcja jest wczytywana do procedury optymalizacyjnej rozwiązującej zadanie optymalizacji kwadratowej.
 \section{Implementacja}
 Pętla główna programu obliczającego trajektorię dronów zaprezentowana jest na poniższym diagramie akcji.
 \begin{figure}[H]
@@ -206,6 +274,5 @@ Pętla główna programu obliczającego trajektorię dronów zaprezentowana jest
 
 \end{figure}
 Zadanie potymalizacji jest rozwiązywane przez funkcję fmincon(..).
-\section{Wynik działania}
-\section{Wnioski}
+
 \end{document}
