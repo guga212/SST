@@ -96,17 +96,43 @@ end
 %a_max maksymalne przyspieszenie
 function [a_x,a_y]=OptimizeNextMove(X,D,d,a_0,v_0,x_0,t,D_min,d_min,V_max,a_max)
     tfun = @(a)TargetFunction(a,X,D,d,v_0,x_0,t);
-   %[res, minval]=fminunc(tfun, a_0);
-
-    
     cfun=@(a)ConstraintFunction(a,X,D_min,d_min,a_0,v_0,x_0,t,V_max,a_max);
+    
     %options = optimoptions('fmincon','Display','off');
     %options = optimoptions('fmincon','Algorithm','sqp','MaxFunctionEvaluations',24000,'MaxIterations', 3200);
     options = optimoptions('fmincon','Algorithm','sqp', 'SpecifyObjectiveGradient', true);
+    
+    A=zeros(2*size(a_0,1)*size(a_0,2)*size(a_0,3),size(a_0,1)*size(a_0,2)*size(a_0,3));
+    b=zeros(2*size(a_0,1)*size(a_0,2)*size(a_0,3),1);
+    
+    global_indx=0;
+    
+    for n=1:2
+        if n>1
+            mult=-1;
+        else
+            mult=1;
+        end
+        var_indx=0;
+        for z=1:size(a_0,3)
+            for j=1:size(a_0,2)
+                for i=1:size(a_0,1)
+                    var_indx= var_indx+1;
+                    global_indx= global_indx+1;
+                    b(global_indx)=V_max-mult*v_0(i,j);
+                    for k=0:z-1
+                        A(global_indx,var_indx-k)=mult*t/size(a_0,3);
+                    end
+                end
+            end
+        end
+    end
+    
+    
     a_ub=(a_0.*0)+a_max;
     a_lb=(a_0.*0)-a_max;
-    [res, minval,exitflag,output,lambda,grad]=fmincon(tfun,a_0,[],[],[],[],a_lb,a_ub,cfun,options);
-
+    [res, minval,exitflag,output,lambda,grad]=fmincon(tfun,a_0,A,b,[],[],a_lb,a_ub,cfun,options);
+    
     a_x=squeeze(res(:,1,:));
     a_y=squeeze(res(:,2,:));
 end
@@ -154,16 +180,16 @@ function [out,grad]=TargetFunction(a,X,D,d,v_0,x_0,t)
     %Minimize formation error in the final point
     for i=1:size(a,1)       
         for j=1:size(a,1)            
-            weight=1.0;         
-            out=out+weight*(d(i,j)^2-(x(i,1)-x(j,1))^2-(x(i,2)-x(j,2))^2)^2;                    
+            weight_ferr=1.0;         
+            out=out+weight_ferr*(d(i,j)^2-(x(i,1)-x(j,1))^2-(x(i,2)-x(j,2))^2)^2;                    
         end
     end
     
     %Minimize velocity square(loss function)
     for i=1:size(v,1)        
         for j=1:size(v,3)
-            weight=0.01;
-            out=out+weight*(v(i,1,j)^2+v(i,2,j)^2);
+            weight_vel=0.01;
+            out=out+weight_vel*(v(i,1,j)^2+v(i,2,j)^2);
         end
     end
 
@@ -195,21 +221,19 @@ function [out,grad]=TargetFunction(a,X,D,d,v_0,x_0,t)
                     grad2_comp(i,2,j)=grad2_comp(i,2,j)+dt^2;
                end
                for n=1:size(a,1) 
-                   grad2(i,1,j)= grad2(i,1,j)+2*weight*(d(i,n)^2-(x(i,1)-x(n,1))^2-(x(i,2)-x(n,2))^2)*-2*(x(i,1)-x(n,1))*grad2_comp(i,1,j);
-                   grad2(i,2,j)= grad2(i,2,j)+2*weight*(d(i,n)^2-(x(i,1)-x(n,1))^2-(x(i,2)-x(n,2))^2)*-2*(x(i,2)-x(n,2))*grad2_comp(i,2,j);
+                   grad2(i,1,j)= grad2(i,1,j)+2*weight_ferr*(d(i,n)^2-(x(i,1)-x(n,1))^2-(x(i,2)-x(n,2))^2)*-2*(x(i,1)-x(n,1))*grad2_comp(i,1,j);
+                   grad2(i,2,j)= grad2(i,2,j)+2*weight_ferr*(d(i,n)^2-(x(i,1)-x(n,1))^2-(x(i,2)-x(n,2))^2)*-2*(x(i,2)-x(n,2))*grad2_comp(i,2,j);
                end
                grad2(i,1,j)=grad2(i,1,j)*2; %%multiply by two cause target function do same error calculation twice
                grad2(i,2,j)=grad2(i,2,j)*2; %%multiply by two cause target function do same error calculation twice
                
-               % Minimize velocity square(loss function)
+               %Gradient minimize velocity square(loss function)
                grad3(i,1,j)=0;
                grad3(i,2,j)=0;
-               for k=1:j
-                    grad3(i,1,j)=grad3(i,1,j)+dt;
-                    grad3(i,2,j)=grad3(i,2,j)+dt;
+               for k=j:size(v,3)
+                    grad3(i,1,j)=grad3(i,1,j)+2*weight_vel*v(i,1,k)*dt;
+                    grad3(i,2,j)=grad3(i,2,j)+2*weight_vel*v(i,2,k)*dt;
                end
-               grad3(i,1,j)=2*weight*v(i,1,j)*grad3(i,1,j);                              
-               grad3(i,2,j)=2*weight*v(i,2,j)*grad3(i,2,j);
                
                
                %%Summarize gradients
@@ -282,15 +306,7 @@ function [c,ceq, gradc, gradceq]=ConstraintFunction(a,X,D_min,d_min,a_0,v_0,x_0,
         end
 
     end
-    
-    %Maximal velocity constraint
-    for k=1:size(v,3)    
-        for i=1:size(v,1)                               
-            cur_ind=cur_ind+1; 
-            c(cur_ind)=v(i,1,k)^2+v(i,2,k)^2-V_max^2;
-        end
-    end
-        
+
 end
 
 function Position = GetMainTrgtPos(VrepAPI, ClientID)

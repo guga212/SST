@@ -15,13 +15,12 @@ function simpleTest()
             
             tic;
     
-            for i=0:3     
-                
-                main_trgt_pos=GetDisturbedMainTrgtPosition(vrep,clientID);
+                 [main_trgt_posd, main_trgt_pos]=GetDisturbedMainTrgtPosition(vrep,clientID);
                 [xd_0, x_0]=GetDisturbedQuadPosition(vrep,clientID,4);
-                xd_0(i+1,:)=x_0(i+1,:);
-                [trgt_alg_x, trgt_alg_y]=OptimizeNextMove([double(main_trgt_pos(1)) double(main_trgt_pos(2))], [1.41;1.41;1.41;1.41 ].*0.9, [0 2 2.828 2; 2 0 2 2.828; 2.828 2 0 2; 2 2.828 2 0].*0.9, xd_0(:,1:2), 1.0, 1.2, 0.4);
-                
+                %xd_0(i+1,:)=x_0(i+1,:);
+                [trgt_alg_x, trgt_alg_y]=OptimizeNextMove([double(main_trgt_pos(1)) double(main_trgt_pos(2))], [1.41;1.41;1.41;1.41 ].*0.9, [0 2 2.828 2; 2 0 2 2.828; 2.828 2 0 2; 2 2.828 2 0].*0.9, x_0(:,1:2), 1.0, 1.2, 0.4);
+            
+            for i=0:3                                                    
                 SetQuadTrgtPos(vrep, clientID, i, [trgt_alg_x(i+1) trgt_alg_y(i+1) x_0(i+1,3)]);                                
             end
             
