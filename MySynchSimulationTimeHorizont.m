@@ -1,8 +1,7 @@
 
-function simpleTest()
+function SynchControl()
     clear();
-     disp('Program started');
-    % vrep=remApi('remoteApi','extApi.h'); % using the header (requires a compiler)
+    disp('Program started');
     vrep=remApi('remoteApi'); % using the prototype file (remoteApiProto.m)
     vrep.simxFinish(-1); % just in case, close all opened connections
     clientID=vrep.simxStart('127.0.0.1',19997,true,true,5000,5);
@@ -16,12 +15,12 @@ function simpleTest()
         % start the simulation:
         vrep.simxStartSimulation(clientID,vrep.simx_opmode_blocking);
 
-        % Now step a few times:
+        % Parameters of simulation:
         N=4;
         sim_dt=0.05;
         sim_t=0;
         idx=1;
-        t=0.05;
+        t=1*sim_dt;
         a_0=zeros(N,2,t/sim_dt);   
         v_0=zeros(N,2);   
         
@@ -31,13 +30,22 @@ function simpleTest()
                 [main_trgt_posd, main_trgt_pos]=GetDisturbedMainTrgtPosition(vrep,clientID);
                 [xd_0, x_0]=GetDisturbedQuadPosition(vrep,clientID,N);
              
+				%Square of 4 quads required scene with 4 quads
                 [trgt_alg_x, trgt_alg_y]=OptimizeNextMove( main_trgt_pos(1:2), [1.41;1.41;1.41;1.41 ].*1.0, [0 2 2.828 2; 2 0 2 2.828; 2.828 2 0 2; 2 2.828 2 0].*1.0,a_0,v_0,x_0(:,1:2),t,1.2, 1.2, 0.5, 6);
-                %[trgt_alg_x, trgt_alg_y]=OptimizeNextMove( main_trgt_pos(1:2), [1.41;1;1.41;1;1.41;1;1.41;1].*1.8, [0 1 2 2.236 2.828 2.236 2 1; 1 0 1 1.41 2.236 2 2.236 1.41;  2 1 0 1 2 2.236 2.828 2.236; 2.236 1.41 1 0 1 1.41 2.236 2; 2.828 2.236 2 1 0 1 2 2.236; 2.828 2 2.236 1.41 1 0 1 1.41; 2 2.236 2.828 2.236 2 1 0 1; 1 1.41 2.236 2 2.236 1.41 1 0; ].*1.8, v_0,x_0(:,1:2),t,1.4, 1.6, 1, 6);
-                a_0=[trgt_alg_x(:,end), trgt_alg_y(:,end)];               
+                
+				%Square of 8 quads required scene with 8 quads
+				%[trgt_alg_x, trgt_alg_y]=OptimizeNextMove( main_trgt_pos(1:2), [1.41;1;1.41;1;1.41;1;1.41;1].*1.8, [0 1 2 2.236 2.828 2.236 2 1; 1 0 1 1.41 2.236 2 2.236 1.41;  2 1 0 1 2 2.236 2.828 2.236; 2.236 1.41 1 0 1 1.41 2.236 2; 2.828 2.236 2 1 0 1 2 2.236; 2.828 2 2.236 1.41 1 0 1 1.41; 2 2.236 2.828 2.236 2 1 0 1; 1 1.41 2.236 2 2.236 1.41 1 0; ].*1.8, a_0,v_0,x_0(:,1:2),t, 1.6, 1.6, 0.4, 5);
+				
+                for i=1:size(a_0,3)
+                    a_0(:,1,i)=trgt_alg_x(:,i);
+                    a_0(:,2,i)=trgt_alg_y(:,i);
+                end
                 sim_t=t;
                 idx=1;
                 posX=squeeze(x_0(:,1));
                 posY=squeeze(x_0(:,2));
+                
+
             end
             
             for i=0:N-1
@@ -100,7 +108,7 @@ function [a_x,a_y]=OptimizeNextMove(X,D,d,a_0,v_0,x_0,t,D_min,d_min,V_max,a_max)
     
     %options = optimoptions('fmincon','Display','off');
     %options = optimoptions('fmincon','Algorithm','sqp','MaxFunctionEvaluations',24000,'MaxIterations', 3200);
-    options = optimoptions('fmincon','Algorithm','sqp', 'SpecifyObjectiveGradient', true);
+    options = optimoptions('fmincon','Algorithm','sqp', 'SpecifyObjectiveGradient', false);
     
     A=zeros(2*size(a_0,1)*size(a_0,2)*size(a_0,3),size(a_0,1)*size(a_0,2)*size(a_0,3));
     b=zeros(2*size(a_0,1)*size(a_0,2)*size(a_0,3),1);
@@ -131,7 +139,15 @@ function [a_x,a_y]=OptimizeNextMove(X,D,d,a_0,v_0,x_0,t,D_min,d_min,V_max,a_max)
     
     a_ub=(a_0.*0)+a_max;
     a_lb=(a_0.*0)-a_max;
+    
+    %%Solver
     [res, minval,exitflag,output,lambda,grad]=fmincon(tfun,a_0,A,b,[],[],a_lb,a_ub,cfun,options);
+        
+    %Global minimum
+%     rng default 
+%     gs = GlobalSearch;
+%     problem = createOptimProblem('fmincon','x0',a_0,'objective',tfun,'Aineq',A,'bineq',b,'lb',a_lb,'ub',a_ub,'nonlcon',cfun);
+%     res = run(gs,problem);
     
     a_x=squeeze(res(:,1,:));
     a_y=squeeze(res(:,2,:));
