@@ -274,5 +274,149 @@ Pętla główna programu obliczającego trajektorię dronów zaprezentowana jest
 
 \end{figure}
 Zadanie potymalizacji jest rozwiązywane przez funkcję fmincon(..).
+\newpage
+\section{Realizacja}
+Docelowo został utworzony interfejs użytkownika(fig.4) umożliwiający zmianę parametrów symulacji m.in. maksymalne przyśpieszenie i prędkość, odległość od celu oraz odległość pomiędzy sąsiednimi dronami a także wybór dostępnych formacji.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{interfejs.png}
+\caption{Interfejs użytkownika.}
+\end{figure}
+Działanie zaimplementowanej optymalizacji dla czterech oraz ośmiu dronów, tworzących formację "kwadrat" nad celem, zostało przedstawione na poniższych rysunkach. Rysunki 5 i 7 przedstawiają początkowe położenie dronów oraz celu na planszy w programie V-rep. Natomiast Rysunki 6 i 8 przedstawiają utworzoną formacje nad przemieszczającym się człowiekiem.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{sim_4_1.png}
+\caption{Początkowe położenie dla symulacji czterech dronów.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{sim_4_2.png}
+\caption{Utworzona formacja dla czterech dronów.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.25]{sim_8_1.png}
+\caption{Początkowe położenie dla symulacji ośmiu dronów.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.25]{sim_8_2.png}
+\caption{Utworzona formacja dla ośmiu dronów.}
+\end{figure}
+
+
+\newpage
+\section{Analiza rozwiązania}
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{porownanie.png}
+\caption{Rezultaty przed i po zastosowaniu optymalizacji.}
+\end{figure}
+
+
+\newpage
+\section{API}
+Funkcja ConstraintFunction definiująca więzy narzucone na układ:
+\newline
+ $function [c,ceq]=ConstraintFunction(a,X,D_{min},d_{min},a_{0},v_{0},x_{0},t,V_{max},a_{max})$\newline
+Parametry:
+\begin{itemize}
+\item $a$ -  minimalna odległość do sąsiada
+\item $X$ - zmienna celu
+\item $D_{min}$ -  minimalna odległość do celu
+\item $d_{min}$ -  macierz minimalnych odległość od sąsiada
+\item $a_{0}$ - początkowa odległość od sąsiada
+\item $v_{0}$  - początkowa prędkość
+\item $x_{0}$ - pozycja początkowa
+\item $t$ - czas
+\item $V_{max}$ - prędkość maksymalna
+\item $a_{max}$ - największa, dopuszczalna odległość od sąsiada
+\end{itemize}
+
+Funkcja zwracająca pozycje celu.
+\newline
+$function Position = GetMainTrgtPos(VrepAPI, ClientID)$
+\newline
+Parametry:
+\begin{itemize}
+\item $VrepAPI$ - 
+\item $ClientID$ - identyfikator użytkownika
+\end{itemize}
+
+Funkcja zwracająca zakłóconą pozycje celu: 
+\newline
+$function [dpos, pos]=GetDisturbedMainTrgtPosition(VrepAPI, ClientID, scale)$
+\newline
+Parametry:
+\begin{itemize}
+\item $VrepAPI$ - 
+\item $ClientID$ - identyfikator użytkownika
+\item $scale$ - współczynnik zakłócenia
+\end{itemize}
+
+Funkcja ustawiająca drony w pozycjach początkowych:
+\newline
+$function SetQuadTrgtPos(VrepAPI, ClientID, QuadNumber, Position)$
+\newline
+Parametry:
+\begin{itemize}
+\item $VrepAPI$ - 
+\item $ClientID$ -identyfikator użytkownika
+\item $QuadNumber$ - numer drona dla którego aktualnie jest ustalana pozycja 
+\item $Position$ - pozycja początkowa w układzie 2D
+\end{itemize}
+Funkcja zwracająca początkową pozycję dla każdego drona z zakłóceniem oraz bez zakłócenia:
+\newline
+$function [dpos, pos]=GetDisturbedQuadPosition(VrepAPI, ClientID, size, scale)$
+\newline
+Parametry:
+\begin{itemize}
+\item $VrepAPI$ - 
+\item $ClientID$ - identyfikator użytkownika
+\item $size$ - liczba dronów 
+\item $scale$ - współczynnik zakłócenia
+\end{itemize}
+
+Funkcja optymalizująca kolejne położenia dronów:
+\newline
+$function [a_x,a_y]=OptimizeNextMove(X,D,d,a_{0},v_{0},x_{0},t,D_{min},d_{min},V_{max},a_{max})$
+\newline
+Parametry:
+\begin{itemize}
+\item $X$ - zmienna celu
+\item $D$ - odległość do celu
+\item $d$ -  odległość od sąsiada
+\item $a_{0}$ - początkowa odległość od sąsiada
+\item $v_{0}$ - początkowa prędkość
+\item $x_{0}$ - pozycja początkowa
+\item $t$ -  czas
+\item $D_{min}$ - minimalna odległość do celu
+\item $d_{min}$ - minimalna odległość od sąsiada
+\item $V_{max}$ - prędkość maksymalna
+\item $a_{max}$ - największa, dopuszczalna odległość od sąsiada 
+\end{itemize}
+
+Funkcja zwracająca optymalną pozycje każdego z dronów oraz gradient sumaryczny zawierający gradient odległości od celu, gradient błędu utworzonej formacji oraz gradient prędkości poruszania się utworzonej formacji:
+\newline 
+$function [out,grad]=TargetFunction(a,X,D,d,v_{0},x_{0},t)$
+\newline
+Parametry:
+\begin{itemize}
+\item $a$ - minimalna odległość do sąsiada
+\item $X$ - zmienna celu
+\item $D$ - zadana odległość od celu 
+\item $d$ - zadana macierz odległości do sąsiada
+\item $v_{0}$ - początkowa prędkość
+\item $x_{0}$ - pozycja początkowa
+\item $t$ -  czas
+\end{itemize}
+
+
+
 
 \end{document}
