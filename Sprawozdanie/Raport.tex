@@ -276,7 +276,7 @@ Pętla główna programu obliczającego trajektorię dronów zaprezentowana jest
 Zadanie potymalizacji jest rozwiązywane przez funkcję fmincon(..).
 \newpage
 \section{Realizacja}
-Docelowo został utworzony interfejs użytkownika(fig.4) umożliwiający zmianę parametrów symulacji m.in. maksymalne przyśpieszenie i prędkość, odległość od celu oraz odległość pomiędzy sąsiednimi dronami a także wybór dostępnych formacji.
+Docelowo został utworzony interfejs użytkownika(fig.4) umożliwiający zmianę parametrów symulacji m.in. maksymalne przyśpieszenie i prędkość ruchu dronów, odległość od celu zachowywaną przez drony po utworzeniu formacji oraz odległość pomiędzy sąsiednimi dronami a także wybór dostępnych formacji.
 
 \begin{figure}[H]
 \centering
@@ -312,6 +312,9 @@ Działanie zaimplementowanej optymalizacji dla czterech oraz ośmiu dronów, two
 
 \newpage
 \section{Analiza rozwiązania}
+W celu oceny poprawności oraz jakości zaimplementowanego zadania optymalizacji, wykreślono przebiegi w czasie, przedstawiające porównanie działania programu bez optymalizacji oraz po zastosowaniu optymalizacji. Pierwszy przebieg przedstawia sumaryczną drogę pokonaną przez każdego drona z pozycji początkowej do momentu utworzenia formacji nad celem. Można zauważyć, że po zastosowaniu optymalizacji znacznie skrócił się czas jaki jest potrzebny do utworzenia formacji z położenia początkowego. Drugą bardzo istotną korzyścią płynącą z zastosowania zadania optymalizacji, jest odległość przebyta przez drony. Po jej zastosowaniu dystans jaki jest potrzebny do utworzenia formacji nad celem zmalał o 30\%. 
+\newline
+Drugi przebieg przedstawia sumaryczne koszty energetyczne dla każdego statku, wykorzystywane  do utworzenia formacji z położenia początkowego. W tym przypadku również można zauważyć znaczną poprawę po zastosowaniu zadania optymalizacji. Koszty energetyczne są znacznie mniejsze, również zmalały o 30\% w stosunku do ruchu dronów bez zadania optymalizacji.   
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.8]{porownanie.png}
@@ -344,7 +347,7 @@ $function Position = GetMainTrgtPos(VrepAPI, ClientID)$
 \newline
 Parametry:
 \begin{itemize}
-\item $VrepAPI$ - 
+\item $VrepAPI$ - struktura zawierająca wszystkie funkcje dostępne w V-rep
 \item $ClientID$ - identyfikator użytkownika
 \end{itemize}
 
@@ -354,7 +357,7 @@ $function [dpos, pos]=GetDisturbedMainTrgtPosition(VrepAPI, ClientID, scale)$
 \newline
 Parametry:
 \begin{itemize}
-\item $VrepAPI$ - 
+\item $VrepAPI$ - struktura zawierająca wszystkie funkcje dostępne w V-rep
 \item $ClientID$ - identyfikator użytkownika
 \item $scale$ - współczynnik zakłócenia
 \end{itemize}
@@ -365,7 +368,7 @@ $function SetQuadTrgtPos(VrepAPI, ClientID, QuadNumber, Position)$
 \newline
 Parametry:
 \begin{itemize}
-\item $VrepAPI$ - 
+\item $VrepAPI$ - struktura zawierająca wszystkie funkcje dostępne w V-rep
 \item $ClientID$ -identyfikator użytkownika
 \item $QuadNumber$ - numer drona dla którego aktualnie jest ustalana pozycja 
 \item $Position$ - pozycja początkowa w układzie 2D
@@ -376,7 +379,7 @@ $function [dpos, pos]=GetDisturbedQuadPosition(VrepAPI, ClientID, size, scale)$
 \newline
 Parametry:
 \begin{itemize}
-\item $VrepAPI$ - 
+\item $VrepAPI$ - struktura zawierająca wszystkie funkcje dostępne w V-rep
 \item $ClientID$ - identyfikator użytkownika
 \item $size$ - liczba dronów 
 \item $scale$ - współczynnik zakłócenia
